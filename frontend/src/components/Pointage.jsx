@@ -59,7 +59,7 @@ const Pointage = () => {
 
     return (
         <div className="w-full h-full flex flex-row">
-            <div className="w-1/3 text-3xl font-semibold flex items-center justify-center">
+            <div className="w-1/3 text-3xl font-semibold flex items-center justify-end ">
                 <h1>
                     Pointez votre présence
                 </h1>

@@ -70,6 +70,10 @@ func GetWeeklyAttendanceHandler(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "User not found"})
 	}
 
+	if employee.WeeklyAttendances == nil {
+		employee.WeeklyAttendances = make(models.WeeklyAttendanceMap)
+	}
+
 	fmt.Printf("\n===============================\n%+v\n=======================================================\n", employee.WeeklyAttendances)
 
 	return c.JSON(http.StatusOK, employee.WeeklyAttendances)
