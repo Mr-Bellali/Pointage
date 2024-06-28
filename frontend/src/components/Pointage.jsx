@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Pointage = () => {
     const [isPresent, setIsPresent] = useState(false);
-    const userID = "7b12749b-3d1b-4293-b739-32f415e707f0";
+    const userID = "2b46ca50-0369-4037-9c42-213ee2815e26";
 
     useEffect(() => {
         fetch(`http://localhost:8080/checkattendancestatus?user_id=${userID}`)

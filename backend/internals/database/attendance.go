@@ -1,14 +1,13 @@
 package database
 
 import (
-	"fmt"
 	"log"
 	"pointage/internals/models"
+	"time"
 )
 
 
 func CreateAttendance(attendance *models.Attendance) error {
-	fmt.Println("attendance database: ", attendance.DepartureTime)
 
 	err := DB.Create(attendance).Error
 	if err != nil {
@@ -28,21 +27,24 @@ func CreateAttendance(attendance *models.Attendance) error {
 	return nil
 }
 
+
 func AddAttendanceToWeekly(employee *models.User, attendance models.Attendance) {
-	_, week := attendance.ArrivalTime.ISOWeek()
-	dayOfWeek := int(attendance.ArrivalTime.Weekday())
+    _, week := attendance.ArrivalTime.ISOWeek()
 
-	if employee.WeeklyAttendances == nil {
-		employee.WeeklyAttendances = make(models.WeeklyAttendanceMap)
-	}
+    if employee.WeeklyAttendances == nil {
+        employee.WeeklyAttendances = make(models.WeeklyAttendanceMap)
+    }
 
-	if _, ok := employee.WeeklyAttendances[week]; !ok {
-		employee.WeeklyAttendances[week] = [5]models.Attendance{}
-	}
+    employee.WeeklyAttendances.AddAttendance(week, attendance)
+}
 
-	if dayOfWeek >= 1 && dayOfWeek <= 5 {
-		weeklyAttendance := employee.WeeklyAttendances[week]
-		weeklyAttendance[dayOfWeek-1] = attendance
-		employee.WeeklyAttendances[week] = weeklyAttendance
-	}
+
+func CountWeeks(attendances []models.Attendance) int {
+    weekCount := 0
+    for _, attendance := range attendances {
+        if attendance.ArrivalTime.Weekday() == time.Monday {
+            weekCount++
+        }
+    }
+    return weekCount
 }

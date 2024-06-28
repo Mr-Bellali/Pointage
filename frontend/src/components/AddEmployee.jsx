@@ -85,8 +85,8 @@ const AddEmployee = () => {
     <div>
       <Fab
         sx={{
-          backgroundColor: "#88AB8E",
-          "&:hover": { backgroundColor: "#769b7d" },
+          backgroundColor: "#EEEDEB",
+          "&:hover": { backgroundColor: "#f3f4f6" },
         }}
         aria-label="add"
         onClick={handleOpen}

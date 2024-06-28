@@ -37,7 +37,14 @@ func (a *Attendance) CalculateWorkingHours() {
 	}
 }
 
-type WeeklyAttendanceMap map[int][5]Attendance
+type WeeklyAttendanceMap map[int][]Attendance
+
+func (w WeeklyAttendanceMap) AddAttendance(week int, attendance Attendance) {
+    if _, ok := w[week]; !ok {
+        w[week] = []Attendance{}
+    }
+    w[week] = append(w[week], attendance)
+}
 
 func (w *WeeklyAttendanceMap) Scan(value interface{}) error {
 	return json.Unmarshal(value.([]byte), &w)
