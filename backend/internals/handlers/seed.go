@@ -12,7 +12,7 @@ import (
 
 func AttendanceSeedHandler(c echo.Context) error {
 	attendance := models.Attendance{
-		UserID:        "801459a4-05c4-4398-bcfe-e0ee4c07db17",
+		UserID:        "624e5806-89d5-4b07-bcc0-7b730accc1c4",
 		ArrivalTime:   time.Date(2024, time.June, 27, 9, 0, 0, 0, time.UTC),
 		DepartureTime: time.Date(2024, time.June, 27, 17, 0, 0, 0, time.UTC),
 		IsPresent: true,

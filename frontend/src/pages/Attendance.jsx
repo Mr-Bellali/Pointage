@@ -2,8 +2,8 @@ import Pointage from "../components/Pointage"
 
 const Attendance = () => {
   return (
-    <section className="w-full h-screen bg-black flex flex-col">
-        <div className="w-full h-[100px] bg-red-600">
+    <section className="w-full h-screen ">
+        <div className="w-full h-[100px]">
             <Pointage />
         </div>
         <div className="w-full h-full bg-yellow-400">

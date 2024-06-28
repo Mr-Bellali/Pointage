@@ -1,20 +1,22 @@
 package models
 
 import (
+	"database/sql/driver"
+	"encoding/json"
 	"time"
 )
 
 type User struct {
-	ID                string                `json:"id" gorm:"primaryKey"`
-	Name              string                `json:"name"`
-	Email             string                `json:"email" gorm:"unique"`
-	Avatar            string                `json:"avatar" gorm:"unique"`
-	Function          string                `json:"function"`
-	Password          string                `json:"password"`
-	Employed          time.Time             `json:"employed"`
-	Attendances       []Attendance          `json:"attendances" gorm:"foreignKey:UserID"`
-	WeeklyAttendances map[int][5]Attendance `json:"weekly_attendances" gorm:"-"`
-	IsAdmin           bool                  `json:"is_admin"`
+	ID                string              `json:"id" gorm:"primaryKey"`
+	Name              string              `json:"name"`
+	Email             string              `json:"email" gorm:"unique"`
+	Avatar            string              `json:"avatar" gorm:"unique"`
+	Function          string              `json:"function"`
+	Password          string              `json:"password"`
+	Employed          time.Time           `json:"employed"`
+	Attendances       []Attendance        `json:"attendances" gorm:"foreignKey:UserID"`
+	WeeklyAttendances WeeklyAttendanceMap `json:"weekly_attendances" gorm:"type:json"`
+	IsAdmin           bool                `json:"is_admin"`
 }
 
 type Attendance struct {
@@ -35,3 +37,12 @@ func (a *Attendance) CalculateWorkingHours() {
 	}
 }
 
+type WeeklyAttendanceMap map[int][5]Attendance
+
+func (w *WeeklyAttendanceMap) Scan(value interface{}) error {
+	return json.Unmarshal(value.([]byte), &w)
+}
+
+func (w WeeklyAttendanceMap) Value() (driver.Value, error) {
+	return json.Marshal(w)
+}
