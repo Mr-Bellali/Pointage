@@ -1,41 +1,50 @@
+import React from 'react';
+import useSWR from 'swr';
 
 const WeeklyAttendance = () => {
+  const userID = "2b46ca50-0369-4037-9c42-213ee2815e26";
 
-  
+  const fetcher = async () => {
+    const response = await fetch(`http://localhost:8080/weeklyattendance/${userID}`, {
+      method: 'GET',
+    });
 
-  const weeklyAttendances = [
-    {
-      week: 1,
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+
+    console.log("data:", data)
+    // console.log("is present", data[26][0].is_present)
+
+    data.forEach((attendance, index) => {
+      console.log(`Index ${index}:`);
+      Object.entries(attendance).forEach(([key, value]) => {
+        console.log(`${key}:`, value);
+      });
+    });
+    
+    // Assuming you want to transform your API response to fit the existing frontend structure
+    const transformedData = {
+      week: 1, // Assuming this is week 1 based on your existing structure
       attendances: [
-        { status: 'Present', hours: 8 },
-        { status: 'Present', hours: 7.5 },
-        { status: 'Present', hours: 8 },
-        { status: 'Absent', hours: 0 },
-        { status: 'Present', hours: 6 }
+        {
+          status: data.is_present ? 'Present' : 'Absent',
+          hours: data.working_hours,
+        }
       ]
-    },
-    {
-      week: 2,
-      attendances: [
-        { status: 'Present', hours: 7 },
-        { status: 'Absent', hours: 0 },
-        { status: 'Absent', hours: 0 },
-        { status: 'Present', hours: 8 },
-        { status: 'Present', hours: 7.5 }
-      ]
-    },
-    {
-      week: 3,
-      attendances: [
-        { status: 'Present', hours: 8 },
-        { status: 'Present', hours: 8 },
-        { status: 'Present', hours: 8 },
-        { status: 'Present', hours: 8 },
-        { status: 'Present', hours: 8 }
-      ]
-    },
-    // Add more weeks as needed
-  ];
+    };
+
+    return [transformedData]; // Return as an array
+  };
+
+  const { data: weeklyAttendances, error } = useSWR(`/weeklyattendance/${userID}`, fetcher);
+
+  // console.log("weekly attendances: ", weeklyAttendances);
+
+  if (error) return <div>Error loading attendances</div>;
+  if (!weeklyAttendances) return <div>Loading...</div>;
 
   return (
     <div className="p-4">

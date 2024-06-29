@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+
 func CreateAttendanceHandler(c echo.Context) error {
     var attendance models.Attendance
 
@@ -23,7 +24,7 @@ func CreateAttendanceHandler(c echo.Context) error {
     end := time.Date(now.Year(), now.Month(), now.Day(), 12, 30, 0, 0, now.Location())
 
     if now.Before(start) || now.After(end) {
-        return c.JSON(http.StatusBadRequest, map[string]string{"error": "Attendance can only be checked between 8:30 AM and 10:30 AM"})
+        return c.JSON(http.StatusBadRequest, map[string]string{"error": "Attendance can only be checked between 8:30 AM and 12:30 PM"})
     }
 
     var existingAttendanceToday models.Attendance
@@ -40,8 +41,11 @@ func CreateAttendanceHandler(c echo.Context) error {
         return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to create an attendance"})
     }
 
+    // Start the automatic absence check for this user
+
     return c.JSON(http.StatusCreated, attendance)
 }
+
 
 
 func CheckAttendanceStatusHandler(c echo.Context) error {
@@ -60,21 +64,3 @@ func CheckAttendanceStatusHandler(c echo.Context) error {
 }
 
 
-func GetWeeklyAttendanceHandler(c echo.Context) error {
-	userID := c.Param("user_id")
-	if userID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "user id is required"})
-	}
-	var employee models.User 
-	if err := database.DB.Where("id = ?", userID).First(&employee).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "User not found"})
-	}
-
-	if employee.WeeklyAttendances == nil {
-		employee.WeeklyAttendances = make(models.WeeklyAttendanceMap)
-	}
-
-	fmt.Printf("\n===============================\n%+v\n=======================================================\n", employee.WeeklyAttendances)
-
-	return c.JSON(http.StatusOK, employee.WeeklyAttendances)
-}
