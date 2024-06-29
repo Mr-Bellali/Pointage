@@ -44,7 +44,7 @@ func IsEmailTaken(email string) bool {
 
 func GetEmployee(id string) (*models.User, error) {
 	var employee models.User 
-	if err := DB.Where("id = ?", id).First(&employee).Error; err != nil {
+	if err := DB.Preload("Attendances").Where("id = ?", id).First(&employee).Error; err != nil {
 		log.Println("failed to get employee:", err)
 		return nil, err
 	}

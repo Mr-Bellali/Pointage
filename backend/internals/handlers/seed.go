@@ -11,18 +11,25 @@ import (
 )
 
 func AttendanceSeedHandler(c echo.Context) error {
-	attendance := models.Attendance{
-		UserID:        "624e5806-89d5-4b07-bcc0-7b730accc1c4",
-		ArrivalTime:   time.Date(2024, time.June, 27, 9, 0, 0, 0, time.UTC),
-		DepartureTime: time.Date(2024, time.June, 27, 17, 0, 0, 0, time.UTC),
-		IsPresent: true,
+	userID := "2b46ca50-0369-4037-9c42-213ee2815e26"
+
+	for i := 0; i < 10; i++ {
+		date := time.Date(2024, time.May, 27+i, 9, 0, 0, 0, time.UTC)
+
+		attendance := models.Attendance{
+			UserID:        userID,
+			ArrivalTime:   date,
+			DepartureTime: date.Add(8 * time.Hour), 
+			IsPresent:     true,
+		}
+
+		attendance.CalculateWorkingHours()
+
+		if err := database.CreateAttendance(&attendance); err != nil {
+			fmt.Println("failed to seed attendance...")
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to seed data"})
+		}
 	}
 
-	attendance.CalculateWorkingHours()
-
-	if err := database.CreateAttendance(&attendance); err != nil {
-		fmt.Println("failed to seed attendance...")
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to seed data"})
-	}
-	return c.JSON(http.StatusCreated, attendance)
+	return c.JSON(http.StatusCreated, map[string]string{"message": "Seeded 10 days of attendance successfully"})
 }

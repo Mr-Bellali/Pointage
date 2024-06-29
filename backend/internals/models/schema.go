@@ -26,11 +26,10 @@ type Attendance struct {
 }
 
 func (a *Attendance) CalculateWorkingHours() {
+	a.WorkingHours = 0 
 	if a.DepartureTime.After(a.ArrivalTime) {
 		duration := a.DepartureTime.Sub(a.ArrivalTime)
 		a.WorkingHours = duration.Hours()
-	} else {
-		a.WorkingHours = 0
-	}
+	} 
 }
 
