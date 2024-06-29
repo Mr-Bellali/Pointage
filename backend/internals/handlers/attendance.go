@@ -41,7 +41,6 @@ func CreateAttendanceHandler(c echo.Context) error {
         return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to create an attendance"})
     }
 
-    // Start the automatic absence check for this user
 
     return c.JSON(http.StatusCreated, attendance)
 }
@@ -49,18 +48,39 @@ func CreateAttendanceHandler(c echo.Context) error {
 
 
 func CheckAttendanceStatusHandler(c echo.Context) error {
-	userID := c.QueryParam("user_id")
-	if userID == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "User ID is required"})
-	}
-	now := time.Now()
-	var attendance models.Attendance
-	result := database.DB.Where("user_id = ? AND DATE(arrival_time) = ?", userID, now.Format("2006-01-02")).First(&attendance)
-	if result.Error == nil {
-		return c.JSON(http.StatusOK, map[string]bool{"checked_in": true})
-	}
+    userID := c.QueryParam("user_id")
+    if userID == "" {
+        return c.JSON(http.StatusBadRequest, map[string]string{"error": "User ID is required"})
+    }
 
-	return c.JSON(http.StatusOK, map[string]bool{"checked_in": false})
+    go CheckAttendanceStatusAndCreateAbsence(userID)
+
+    now := time.Now()
+    var attendance models.Attendance
+    result := database.DB.Where("user_id = ? AND DATE(arrival_time) = ?", userID, now.Format("2006-01-02")).First(&attendance)
+    if result.Error == nil {
+        return c.JSON(http.StatusOK, map[string]bool{"checked_in": true})
+    }
+
+    return c.JSON(http.StatusOK, map[string]bool{"checked_in": false})
 }
 
+func CheckAttendanceStatusAndCreateAbsence(userID string) {
+    now := time.Now()
+    end := time.Date(now.Year(), now.Month(), now.Day(), 12, 30, 0, 0, now.Location())
+
+    if now.After(end) {
+        var existingAttendanceToday models.Attendance
+        result := database.DB.Where("user_id = ? AND DATE(arrival_time) = ?", userID, now.Format("2006-01-02")).First(&existingAttendanceToday)
+        if result.Error != nil {
+            absenceRecord := models.Attendance{
+                UserID:      userID,
+                IsPresent:   false,
+            }
+            if err := database.CreateAttendance(&absenceRecord); err != nil {
+                fmt.Println("Error creating absence:", err)
+            }
+        }
+    }
+}
 

@@ -3,6 +3,7 @@ package internals
 import (
 	"pointage/api/routes"
 	"pointage/internals/database"
+	"pointage/pkg"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -22,6 +23,8 @@ func Runserver() {
 
 	routes.SetupEmployeesRoutes(e)
 	routes.SetupAttendanceRoutes(e)
+
+	pkg.InitCronScheduler()
 
 	e.Logger.Fatal(e.Start(":8080"))
 
