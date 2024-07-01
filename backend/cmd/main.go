@@ -18,7 +18,7 @@ func main() {
 
     // Stop cron scheduler
     pkg.StopCronScheduler()
-
+	pkg.StopCronDeparatureScheduler()
     // Additional cleanup if necessary
     // ...
 

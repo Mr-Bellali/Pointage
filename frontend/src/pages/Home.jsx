@@ -8,7 +8,19 @@ const Home = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:8080/employees")
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // Handle case where token is missing
+      console.error("No token found in localStorage");
+      return;
+    }
+
+    fetch("http://localhost:8080/employees", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
         console.log("Fetched employees: ", data);
@@ -33,11 +45,13 @@ const Home = () => {
     );
   };
 
+  const nonAdminEmployees = employees.filter(employee => !employee.is_admin);
+
   return (
     <section className="w-full h-screen bg-[#F2F1EB] flex">
       <Sidebar />
       <div className="w-full h-full p-4 grid grid-cols-4 gap-4">
-        {employees.map((employee) => (
+        {nonAdminEmployees.map((employee) => (
           <EmployeeCard
             key={employee.id}
             name={employee.name}
@@ -55,5 +69,6 @@ const Home = () => {
     </section>
   );
 };
+
 
 export default Home;

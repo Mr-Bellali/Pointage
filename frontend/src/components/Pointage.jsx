@@ -1,3 +1,4 @@
+import { jwtDecode } from 'jwt-decode';
 import { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -5,10 +6,16 @@ import 'react-toastify/dist/ReactToastify.css';
 const Pointage = () => {
     const [isPresent, setIsPresent] = useState(false);
     const [isAbsentChecked, setIsAbsentChecked] = useState(false);
-    const userID = "b0e7d6e9-fdf0-42b6-825c-4e90723724ad";
-
+    const token = localStorage.getItem("token");
+    const decoded = jwtDecode(token);
+    
+    const userID = decoded["id"];
     useEffect(() => {
-        fetch(`http://localhost:8080/checkattendancestatus?user_id=${userID}`)
+        fetch(`http://localhost:8080/checkattendancestatus?user_id=${userID}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        })
             .then((response) => response.json())
             .then((data) => {
                 if (data.checked_in) {
@@ -40,6 +47,7 @@ const Pointage = () => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(data),
         })
@@ -76,6 +84,7 @@ const Pointage = () => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(data),
         })

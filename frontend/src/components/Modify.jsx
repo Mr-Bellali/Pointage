@@ -3,6 +3,15 @@ import { IconButton, Modal } from '@mui/material';
 import { useState, useEffect } from 'react';
 import useSWR, { mutate } from 'swr';
 const Modify = ({ employee }) => {
+
+  const token = localStorage.getItem("token");
+
+    if (!token) {
+      // Handle case where token is missing
+      console.error("No token found in localStorage");
+      return;
+    }
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',

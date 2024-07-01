@@ -20,12 +20,12 @@ func Runserver() {
 
 	e.Static("/uploads", "public/uploads")
 
-
+	routes.SetupAuthRoutes(e)
 	routes.SetupEmployeesRoutes(e)
 	routes.SetupAttendanceRoutes(e)
 
 	pkg.InitCronScheduler()
-
+	pkg.InitCronDeparatureScheduler()
 	e.Logger.Fatal(e.Start(":8080"))
 
 }

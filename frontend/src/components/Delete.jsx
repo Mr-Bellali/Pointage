@@ -15,6 +15,14 @@ const style = {
 };
 
 const Delete = ({ employeeId, onDelete }) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    // Handle case where token is missing
+    console.error("No token found in localStorage");
+    return;
+  }
+
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -22,6 +30,9 @@ const Delete = ({ employeeId, onDelete }) => {
   const handleDelete = () => {
     fetch(`http://localhost:8080/employees/${employeeId}`,{
       method: 'DELETE',
+      headers: {
+      Authorization: `Bearer ${token}`,
+    }
     }).then(response => {
       if (response.ok) {
         onDelete();

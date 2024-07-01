@@ -14,6 +14,7 @@ type User struct {
 	Employed    time.Time   `json:"employed"`
 	Attendances []Attendance `json:"attendances" gorm:"foreignKey:UserID"`
 	IsAdmin     bool        `json:"is_admin"`
+	IsFirstTime bool        `json:"is_first_time" gorm:"default:true"`
 }
 
 type Attendance struct {

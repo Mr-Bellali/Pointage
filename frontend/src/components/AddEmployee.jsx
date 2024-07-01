@@ -4,6 +4,14 @@ import AddIcon from "@mui/icons-material/Add";
 import useSWR, { mutate } from "swr";
 
 const AddEmployee = () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    // Handle case where token is missing
+    console.error("No token found in localStorage");
+    return;
+  }
+
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -58,6 +66,9 @@ const AddEmployee = () => {
     try {
       const response = await fetch("http://localhost:8080/employees", {
         method: "POST",
+        headers : {
+          Authorization: `Bearer ${token}`,
+        },
         body: formDataToSend,
       });
 

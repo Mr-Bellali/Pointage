@@ -1,13 +1,26 @@
+import { jwtDecode } from 'jwt-decode';
 import useSWR from 'swr';
 
 const WeeklyAttendance = () => {
-  const userID = "2b46ca50-0369-4037-9c42-213ee2815e26";
+  const token = localStorage.getItem("token");
+  const decoded = jwtDecode(token);
+  const userID = decoded["id"];
+
+
+  console.log("user id:", userID);
+  console.log("is first time: ", decoded["is_first_time"])
 
   const fetcher = async (url) => {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Authorization header with Bearer token
+      },
+    });
+
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
+
     const data = await response.json();
     return data;
   };

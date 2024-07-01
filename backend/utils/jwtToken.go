@@ -13,18 +13,20 @@ type JwtCustomClaims struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Username string `json:"username"`
-	UserID   string    `json:"id"`
+	UserID   string `json:"id"`
+	IsAdmin  bool   `json:"is_admin"`
+	IsFirstTime bool `json:"is_first_time"`
 	jwt.RegisteredClaims
 }
 
-func JWTgenerator(name, email, username, adminID string) (string, error) {
+func JWTgenerator(name, email, userID string, isAdmin , isFirstTime bool) (string, error) {
 	claims := &JwtCustomClaims{
-		name,
-		email,
-		username,
-		adminID,
-		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+		Name:     name,
+		Email:    email,
+		UserID:   userID,
+		IsAdmin:  isAdmin,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 9)),
 		},
 	}
 

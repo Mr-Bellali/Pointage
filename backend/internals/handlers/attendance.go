@@ -84,3 +84,49 @@ func CheckAttendanceStatusAndCreateAbsence(userID string) {
     }
 }
 
+func LeavingHandler(c echo.Context) error {
+    userID := c.QueryParam("user_id")
+    if userID == "" {
+        return c.JSON(http.StatusBadRequest, map[string]string{"error": "User ID is required"})
+    }
+
+    now := time.Now()
+    var attendance models.Attendance
+    result := database.DB.Where("user_id = ? AND DATE(arrival_time) = ?", userID, now.Format("2006-01-02")).First(&attendance)
+    if result.Error != nil {
+        return c.JSON(http.StatusNotFound, map[string]string{"error": "Attendance record not found"})
+    }
+
+    if attendance.IsPresent {
+        attendance.DepartureTime = now
+        attendance.CalculateWorkingHours()
+        if err := database.DB.Save(&attendance).Error; err != nil {
+            return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update attendance"})
+        }
+        return c.JSON(http.StatusOK, attendance)
+    }
+
+    return c.JSON(http.StatusBadRequest, map[string]string{"error": "User is not present"})
+}
+
+
+func AutoUpdateDepartureTime() {
+	now := time.Now()
+	cutoffTime := time.Date(now.Year(), now.Month(), now.Day(), 17, 30, 0, 0, now.Location())
+	var attendances []models.Attendance
+	result := database.DB.Where("is_present = ? AND DATE(arrival_time) = ?", true, now.Format("2006-01-02")).Find(&attendances)
+	if result.Error != nil {
+		fmt.Println("Error fetching attendances for auto update:", result.Error)
+		return
+	}
+
+	for _, attendance := range attendances {
+		if attendance.DepartureTime.IsZero() {
+			attendance.DepartureTime = cutoffTime
+			attendance.CalculateWorkingHours()
+			if err := database.DB.Save(&attendance).Error; err != nil {
+				fmt.Println("Error updating attendance for user", attendance.UserID, ":", err)
+			}
+		}
+	}
+}
