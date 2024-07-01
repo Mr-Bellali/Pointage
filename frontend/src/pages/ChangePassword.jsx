@@ -1,7 +1,14 @@
 import {  useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const ChangePassword = () => {
+
+  const token = localStorage.getItem("token")
+  const decoded = jwtDecode(token)
+
+  console.log(decoded.id)
+
   const ENDPOINT = 'http://localhost:8080';
   const navigate = useNavigate();
 
@@ -23,47 +30,45 @@ const ChangePassword = () => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
+        alert('Passwords do not match');
+        return;
     }
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No token found');
+        }
 
-      const response = await fetch(`${ENDPOINT}/change-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ newPassword }),
-      });
+        const response = await fetch(`${ENDPOINT}/change-password/${decoded.id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ password: newPassword }), // Ensure the key is "password"
+        });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message || 'Network response was not ok');
+        }
 
-      const data = await response.json();
-      if (!data.success) {
-        throw new Error('Password change unsuccessful');
-      }
+        setFormData({
+            newPassword: '',
+            confirmPassword: '',
+        });
 
-      setFormData({
-        newPassword: '',
-        confirmPassword: '',
-      });
-
-      alert('Password changed successfully');
-      navigate('/attendance'); // Redirect to attendance page after password change
+        alert('Password changed successfully');
+        navigate('/attendance');
 
     } catch (error) {
-      console.error('There was a problem with changing password: ', error);
-      alert('Password change unsuccessful. Please try again.');
+        console.error('There was a problem with changing password: ', error);
+        alert('Password change unsuccessful. Please try again.');
     }
-  };
+};
+
+
 
   return (
     <div className="flex justify-center items-center h-screen" style={{ backgroundColor: '#F2F1EB' }}>

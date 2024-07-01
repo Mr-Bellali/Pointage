@@ -1,4 +1,4 @@
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import useSWR from 'swr';
 
 const WeeklyAttendance = () => {
@@ -6,14 +6,10 @@ const WeeklyAttendance = () => {
   const decoded = jwtDecode(token);
   const userID = decoded["id"];
 
-
-  console.log("user id:", userID);
-  console.log("is first time: ", decoded["is_first_time"])
-
   const fetcher = async (url) => {
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add Authorization header with Bearer token
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -33,6 +29,17 @@ const WeeklyAttendance = () => {
   const attendances = employee.attendances || [];
   const weeks = Math.ceil(attendances.length / 5); // Calculate number of weeks
 
+  const formatTime = (hours) => {
+    const totalMinutes = Math.round(hours * 60);
+    const hrs = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+
+    if (hrs === 0) {
+      return `${mins} min`;
+    }
+    return `${hrs} hr${hrs > 1 ? 's' : ''} ${mins} min`;
+  };
+
   return (
     <div className="p-4">
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -51,7 +58,7 @@ const WeeklyAttendance = () => {
               <tr key={weekIndex}>
                 <td className="py-2 px-4 border-b text-center font-medium text-gray-700">{`Week ${weekIndex + 1}`}</td>
                 <td className="py-2 px-4 border-b">
-                  {attendances.slice(weekIndex * 5, (weekIndex + 1) * 5).map((attendance, idx) => (
+                  {attendances.slice(weekIndex * 5, (weekIndex + 1) * 5).map((attendance) => (
                     <div
                       key={attendance.id}
                       className={`inline-block px-16 py-1 mr-2 mb-2 rounded ${
@@ -62,7 +69,7 @@ const WeeklyAttendance = () => {
                         {attendance.is_present ? 'Present' : 'Absent'}
                       </div>
                       <div className="text-xs text-gray-600">
-                        {attendance.working_hours || 'N/A'} hrs
+                        {attendance.working_hours ? formatTime(attendance.working_hours) : 'N/A'}
                       </div>
                     </div>
                   ))}

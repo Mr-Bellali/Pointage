@@ -45,6 +45,7 @@ func CreateEmployeeHandler(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to create employee"})
 	}
 
+
 	return c.JSON(http.StatusCreated, employee)
 }
 

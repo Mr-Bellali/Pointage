@@ -3,7 +3,6 @@ package utils
 import (
 	"log"
 	"time"
-
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -25,6 +24,7 @@ func JWTgenerator(name, email, userID string, isAdmin , isFirstTime bool) (strin
 		Email:    email,
 		UserID:   userID,
 		IsAdmin:  isAdmin,
+		IsFirstTime: isFirstTime,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 9)),
 		},

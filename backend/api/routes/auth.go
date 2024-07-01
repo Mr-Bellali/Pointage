@@ -9,5 +9,5 @@ import (
 
 func SetupAuthRoutes(e *echo.Echo) {
 	e.POST("/login",handlers.Login)
-	e.PUT("/change-password", handlers.ChangePasswordHandler, middlewares.AuthMiddleware(), middlewares.FirstTimeLoginMiddleware())
+	e.POST("/change-password/:id", handlers.ChangePasswordHandler, middlewares.AuthMiddleware())
 }

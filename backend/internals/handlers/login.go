@@ -59,31 +59,34 @@ func Login(c echo.Context) error {
 	})
 }
 
+
 func ChangePasswordHandler(c echo.Context) error {
-	id := c.Param("id")
-	var data map[string]string
+    id := c.Param("id")
+    var data map[string]string
 
+    fmt.Printf("\nReceived request to change password for user ID: %v\n", id)
 
-	if err := c.Bind(&data); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request body"})
-	}
+    if err := c.Bind(&data); err != nil {
+        fmt.Println("Error binding data:", err)
+        return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request body"})
+    }
 
-	password := data["password"]
+    password := data["password"]
+    if password == "" {
+        fmt.Println("Password is empty")
+        return c.JSON(http.StatusBadRequest, map[string]string{"message": "Password is required"})
+    }
 
+    hashedPass, err := utils.MakePassword(password)
+    if err != nil {
+        fmt.Println("Error hashing the new password:", err)
+        return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to hash password"})
+    }
 
+    if err := database.UpdatePassword(id, hashedPass); err != nil {
+        fmt.Println("Error updating password in database:", err)
+        return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to update password"})
+    }
 
-	if password == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Email and password are required"})
-	}
-
-	hashedPass, err := utils.MakePassword(password)
-	if err != nil {
-		fmt.Println("error hashing the new password: ", err)
-	}
-
-	if err := database.UpdatePassword(id, hashedPass); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to generate token"})
-	}
-
-	return c.JSON(http.StatusOK, map[string]string{"message": "password changed"})
+    return c.JSON(http.StatusOK, map[string]string{"message": "Password changed successfully"})
 }

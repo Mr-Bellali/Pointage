@@ -1,5 +1,6 @@
 import Pointage from "../components/Pointage"
 import WeeklyAttendance from "../components/Weeklyattendance"
+import Logoutbutton from "../components/auth/Logoutbutton"
 
 const Attendance = () => {
   return (
@@ -10,6 +11,9 @@ const Attendance = () => {
         <div className="w-full h-full flex flex-col items-center">
           <div className="w-[70%]">
             <WeeklyAttendance />
+          </div>
+          <div className="right-[16%] top-[85%] absolute">
+            <Logoutbutton />
           </div>
         </div>
     </section>

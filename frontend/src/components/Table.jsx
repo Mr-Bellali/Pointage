@@ -63,9 +63,6 @@ const Table = ({ title }) => {
               Function
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Status
-            </th>
-            <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
               Employed
             </th>
             <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -99,23 +96,6 @@ const Table = ({ title }) => {
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   {employee.function}
-                </td>
-                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <span
-                    className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
-                      employee.status ? "text-green-900" : "text-red-900"
-                    }`}
-                  >
-                    <span
-                      aria-hidden
-                      className={`absolute inset-0 opacity-50 rounded-full ${
-                        employee.status ? "bg-green-200" : "bg-red-200"
-                      }`}
-                    ></span>
-                    <span className="relative">
-                      {employee.status ? "Online" : "Offline"}
-                    </span>
-                  </span>
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   {new Date(employee.employed).toLocaleDateString()}

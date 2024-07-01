@@ -21,7 +21,7 @@ func CreateAttendanceHandler(c echo.Context) error {
 
     now := time.Now()
     start := time.Date(now.Year(), now.Month(), now.Day(), 8, 30, 0, 0, now.Location())
-    end := time.Date(now.Year(), now.Month(), now.Day(), 12, 30, 0, 0, now.Location())
+    end := time.Date(now.Year(), now.Month(), now.Day(), 10, 30, 0, 0, now.Location())
 
     if now.Before(start) || now.After(end) {
         return c.JSON(http.StatusBadRequest, map[string]string{"error": "Attendance can only be checked between 8:30 AM and 12:30 PM"})
@@ -85,16 +85,27 @@ func CheckAttendanceStatusAndCreateAbsence(userID string) {
 }
 
 func LeavingHandler(c echo.Context) error {
-    userID := c.QueryParam("user_id")
-    if userID == "" {
-        return c.JSON(http.StatusBadRequest, map[string]string{"error": "User ID is required"})
-    }
+   var attendance models.Attendance
+   err := c.Bind(&attendance)
+   if err != nil {
+    return c.String(http.StatusBadRequest, "bad request")
+   }
+
+   fmt.Printf("\n------------\natendance:\t%+v\n-------------\n", attendance)
+
+   fmt.Println("user ID gotten from frontend: ", attendance.ID)
 
     now := time.Now()
-    var attendance models.Attendance
-    result := database.DB.Where("user_id = ? AND DATE(arrival_time) = ?", userID, now.Format("2006-01-02")).First(&attendance)
+    result := database.DB.Where("user_id = ? AND DATE(arrival_time) = ?", attendance.UserID, now.Format("2006-01-02")).First(&attendance)
+
+    fmt.Printf("\n--------\nresult: %+v\n------\n",result)
+
     if result.Error != nil {
         return c.JSON(http.StatusNotFound, map[string]string{"error": "Attendance record not found"})
+    }
+
+    if !attendance.DepartureTime.IsZero() {
+        return c.JSON(http.StatusBadRequest, map[string]string{"error": "Departure time already recorded"})
     }
 
     if attendance.IsPresent {
