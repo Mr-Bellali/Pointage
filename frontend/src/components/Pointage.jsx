@@ -45,14 +45,14 @@ const Pointage = () => {
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
-      10,
-      30,
+      13,
+      0,
       0
     );
 
     if (now < start || now > end) {
       toast.error(
-        "Attendance can only be checked between 8:30 AM and 10:30 AM"
+        "Attendance can only be checked between 8:30 AM and 13:00 "
       );
       return;
     }
@@ -129,14 +129,14 @@ const Pointage = () => {
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
-      10,
-      30,
+      13,
+      0,
       0
     );
 
     if (now < start || now > end) {
       toast.error(
-        "Attendance can only be checked between 8:30 AM and 10:30 AM"
+        "Attendance can only be checked between 8:30 and 13:00 "
       );
       return;
     }

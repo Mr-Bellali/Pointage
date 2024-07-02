@@ -8,7 +8,7 @@ import (
 )
 
 func SetupAttendanceRoutes(e *echo.Echo){
-	e.GET("/seedattendance", handlers.AttendanceSeedHandler, middlewares.AuthMiddleware())
+	e.GET("/seedattendance", handlers.AttendanceSeedHandler)
 	e.POST("/createattendance", handlers.CreateAttendanceHandler, middlewares.AuthMiddleware())
 	e.GET("/checkattendancestatus", handlers.CheckAttendanceStatusHandler, middlewares.AuthMiddleware())
 	e.POST("/leaving", handlers.LeavingHandler, middlewares.AuthMiddleware())

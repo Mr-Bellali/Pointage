@@ -21,7 +21,7 @@ func CreateAttendanceHandler(c echo.Context) error {
 
     now := time.Now()
     start := time.Date(now.Year(), now.Month(), now.Day(), 8, 30, 0, 0, now.Location())
-    end := time.Date(now.Year(), now.Month(), now.Day(), 10, 30, 0, 0, now.Location())
+    end := time.Date(now.Year(), now.Month(), now.Day(), 12, 30, 0, 0, now.Location())
 
     if now.Before(start) || now.After(end) {
         return c.JSON(http.StatusBadRequest, map[string]string{"error": "Attendance can only be checked between 8:30 AM and 12:30 PM"})
@@ -85,29 +85,29 @@ func CheckAttendanceStatusAndCreateAbsence(userID string) {
 }
 
 func LeavingHandler(c echo.Context) error {
-   var attendance models.Attendance
-   err := c.Bind(&attendance)
-   if err != nil {
-    return c.String(http.StatusBadRequest, "bad request")
-   }
-
-   fmt.Printf("\n------------\natendance:\t%+v\n-------------\n", attendance)
-
-   fmt.Println("user ID gotten from frontend: ", attendance.ID)
-
+    var attendance models.Attendance
+    err := c.Bind(&attendance)
+    if err != nil {
+        return c.String(http.StatusBadRequest, "bad request")
+    }
+ 
+    fmt.Printf("\n------------\natendance:\t%+v\n-------------\n", attendance)
+    fmt.Println("user ID gotten from frontend: ", attendance.UserID)
+ 
     now := time.Now()
     result := database.DB.Where("user_id = ? AND DATE(arrival_time) = ?", attendance.UserID, now.Format("2006-01-02")).First(&attendance)
-
-    fmt.Printf("\n--------\nresult: %+v\n------\n",result)
-
+ 
+    fmt.Printf("\n--------\nresult: %+v\n------\n", result)
+ 
     if result.Error != nil {
         return c.JSON(http.StatusNotFound, map[string]string{"error": "Attendance record not found"})
     }
-
+ 
     if !attendance.DepartureTime.IsZero() {
+        fmt.Println("Departure time is already recorded:", attendance.DepartureTime)
         return c.JSON(http.StatusBadRequest, map[string]string{"error": "Departure time already recorded"})
     }
-
+ 
     if attendance.IsPresent {
         attendance.DepartureTime = now
         attendance.CalculateWorkingHours()
@@ -116,10 +116,10 @@ func LeavingHandler(c echo.Context) error {
         }
         return c.JSON(http.StatusOK, attendance)
     }
-
+ 
     return c.JSON(http.StatusBadRequest, map[string]string{"error": "User is not present"})
-}
-
+ }
+ 
 
 func AutoUpdateDepartureTime() {
 	now := time.Now()

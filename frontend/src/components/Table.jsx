@@ -8,7 +8,6 @@ const Table = ({ title }) => {
   const token = localStorage.getItem("token");
 
     if (!token) {
-      // Handle case where token is missing
       console.error("No token found in localStorage");
       return;
     }

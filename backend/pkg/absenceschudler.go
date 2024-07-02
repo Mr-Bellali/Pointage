@@ -11,12 +11,9 @@ var cronScheduler *cron.Cron
 func InitCronScheduler() {
     cronScheduler = cron.New()
 
-    // Define cron job to run at 12:30 PM daily
-    _, err := cronScheduler.AddFunc("30 12 * * *", func() {
-        // Fetch all employees or use your employee list
-        employees := []models.User{} // Replace with your logic to fetch employees
+    _, err := cronScheduler.AddFunc("30 10 * * *", func() {
+        employees := []models.User{} 
 
-        // Iterate through employees and check attendance status
         for _, employee := range employees {
             handlers.CheckAttendanceStatusAndCreateAbsence(employee.ID)
         }
@@ -26,7 +23,6 @@ func InitCronScheduler() {
         panic("Error adding cron job: " + err.Error())
     }
 
-    // Start cron scheduler
     cronScheduler.Start()
 }
 

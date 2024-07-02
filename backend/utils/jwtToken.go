@@ -11,7 +11,6 @@ var JWTSecret = []byte("secret")
 type JwtCustomClaims struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
-	Username string `json:"username"`
 	UserID   string `json:"id"`
 	IsAdmin  bool   `json:"is_admin"`
 	IsFirstTime bool `json:"is_first_time"`

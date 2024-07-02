@@ -16,13 +16,8 @@ func main() {
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
     <-quit
 
-    // Stop cron scheduler
     pkg.StopCronScheduler()
 	pkg.StopCronDeparatureScheduler()
-    // Additional cleanup if necessary
-    // ...
-
-    // Server shutdown complete
     fmt.Println("Server shutdown complete")
 	
 }
